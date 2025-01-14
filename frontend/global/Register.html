@@ -22,13 +22,29 @@
             <form>
                 <p>Fullname:</p>
                 <input type="text" name= "" placeholder="Enter Fullname" required>
+
                 <p>Email:</p>
                 <input type="email" name= "" placeholder="Enter email" required>
+
+                <!-- Dropdown for selecting role -->
+    <p>Role:</p>
+    <select name="role" required>
+        <option value="" disabled selected>Select Role</option>
+        <option value="tenant">Tenant</option>
+        <option value="admin">Admin</option>
+    </select>
                 
                 <p>DoorNumber:</p>
                 <input type="text" name="" placeholder="Enter DoorNo" required>
+
                 <p>Password:</p>
                 <input type="Password" name="" placeholder="Enter Password" required>
+
+                 <!-- Checkbox for terms and conditions -->
+    <div style="margin-top: 10px;">
+        <input type="checkbox" name="terms" id="terms" required>
+        <label for="terms">I agree to the terms and conditions</label>
+    </div>
                
                 <input type="submit" name="" value="Register"><br>
                 

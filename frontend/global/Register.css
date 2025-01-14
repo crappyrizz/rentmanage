@@ -16,7 +16,7 @@ body {
     background: transparent;
     backdrop-filter: blur(5px); /* Adds the blur effect */
     color: white;
-    top: 50%;
+    top: 46%;
     left: 85%;
     position: absolute;
     transform: translate(-50%, -50%);
@@ -87,6 +87,33 @@ input[type="email"]
     background: #ffc107;
     color: #000;
 }
+
+.registerbox select {
+    width: 100%;
+    margin-bottom: 20px;
+    border: none;
+    border-bottom: 1px solid white;
+    background: transparent;
+    outline: none;
+    height: 40px;
+    color: white;
+    font-size: 18px;
+}
+
+
+
+.registerbox input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+.registerbox label {
+    font-size: 14px;
+    font-weight: normal;
+    color: white;
+    vertical-align: middle;
+}
+
 /*
 .logo{
     position: fixed;
@@ -96,8 +123,4 @@ input[type="email"]
     height: auto;
 
 }
-
-
-
-
 
