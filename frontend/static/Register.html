@@ -21,7 +21,7 @@
             
             <h1>Register Here</h1> <br>
 
-            <form>
+            <form action="http://127.0.0.1:5000/register" method="POST">
 
                 <p>Fullname:</p>
                <!-- <div class="input-container"> -->
@@ -59,12 +59,12 @@
                 <input type="Password" name="" placeholder="Enter Password" required>
                 <!-- </div> -->
 
-                 <!-- Checkbox for terms and conditions -->
+                <!-- Checkbox for terms and conditions -->
     <div style="margin-top: 10px;">
         <input type="checkbox" name="terms" id="terms" required>
-        <label for="terms">I agree to the terms and conditions</label>
+        <label for="terms" required="">I agree to the terms and conditions </label>
     </div>
-               
+
                 <input type="submit" name="" value="Register"><br>
                 
                 
