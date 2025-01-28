@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link rel="stylesheet" href="Register.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Register.css') }}">
 </head>
    
 
@@ -21,7 +21,7 @@
             
             <h1>Register Here</h1> <br>
 
-            <form action="http://127.0.0.1:5000/register" method="POST">
+            <form action="http://127.0.0.1:5000/egister" method="POST">
 
                 <p>Fullname:</p>
                <!-- <div class="input-container"> -->
