@@ -24,12 +24,16 @@
         </div>
     </div>
 
+    <!-- Pass the user role dynamically from Flask -->
     <script>
-        const userRole = "{{ role }}"; // Role passed from Flask backend
-        renderSidebar(userRole); // Call the function from sidebar.js
+        document.addEventListener("DOMContentLoaded", () => {
+            const userRole = "{{ role }}"; // Role passed from Flask backend
+            console.log("User Role:", userRole); // Debug
+            renderSidebar(userRole); // Call the function after DOM is ready
+        });
     </script>
     
     <!-- Link to the sidebar.js file -->
-    <script src="sidebar.js"></script>
+    <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
 </body>
 </html>

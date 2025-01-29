@@ -1,5 +1,6 @@
 // Function to render sidebar based on role
 function renderSidebar(userRole) {
+    console.log("Rendering sidebar for role:", userRole); // Debug: Log the role
     const menu = document.getElementById("sidebar-menu");
 
     // Common buttons for all users
@@ -31,6 +32,7 @@ function renderSidebar(userRole) {
     menu.innerHTML = menuItems;
 }
 
+console.log("Sidebar.js Loaded"); // Debug: Ensure the script loads
 // Example usage
 
-renderSidebar(userRole);
+

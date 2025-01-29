@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 
 from flask_mysqldb import MySQL
 import bcrypt
@@ -46,9 +46,11 @@ def register():
             (fullname, email, hashed_password, role, doorno)
         )
         mysql.connection.commit()
-        return jsonify({"message": "Registration successful!"}), 201
+        # redirect to the login page
+        return redirect(url_for('show_login_page'))
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+    # Show an error message if something goes wrong
+        return render_template('Register.html', error=f"Error: {str(e)}")
     finally:
         cursor.close()
         
@@ -77,15 +79,16 @@ def login():
             role = user[4]  # Assuming the role is in column 5
             session['user_role'] = role  # Save role in session
             session['user_email'] = email  # Save email in session (if needed)
-            return jsonify({"message": "Login successful!", "role": role}), 200
+            return redirect(url_for('dashboard'))  # Redirect to dashboard
         else:
-            return jsonify({"error": "Invalid password"}), 401
+            return render_template('login.html', error="Invalid password")  # Show error on login page
     else:
-        return jsonify({"error": "User not found"}), 404
+        return render_template('login.html', error="User not found")  # Show error on login page
     
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
+    print(f"Session Data: {session}")  # Debug: Print session data
     if 'user_role' not in session:
         return redirect('/login')  # Redirect to login if user is not authenticated
     user_role = session['user_role']  # Get user role from session
