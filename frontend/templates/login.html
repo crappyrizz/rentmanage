@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="Login.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Login.css') }}">
+</head>
    
 
     <body>
@@ -15,20 +16,20 @@
             
             <h1>Login</h1> <br>
 
-            <form>
+            <form action="http://127.0.0.1:5000/login" method="POST">
                
                 <p>Email</p>
-                <input type="email" name= "" placeholder="Enter email" required>
+                <input type="email" name= "email" placeholder="Enter email" required>
                
                 <p>Password</p>
-                <input type="Password" name="" placeholder="Enter Password" required>
-                <input type="submit" name="" value="Login"><br>
+                <input type="Password" name="password" placeholder="Enter Password" required>
+                <input type="submit" name="submit" value="Login"><br>
                 
                 
 
             </form>
         </div>
     </body>
-</head>
+
 
 </html>

@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="dashboard.css"> <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    
+
 </head>
 <body>
     <div class="dashboard">
@@ -22,6 +24,11 @@
         </div>
     </div>
 
+    <script>
+        const userRole = "{{ role }}"; // Role passed from Flask backend
+        renderSidebar(userRole); // Call the function from sidebar.js
+    </script>
+    
     <!-- Link to the sidebar.js file -->
     <script src="sidebar.js"></script>
 </body>

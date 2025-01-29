@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect
 
 from flask_mysqldb import MySQL
 import bcrypt
 
 app = Flask(
     __name__,
-    static_folder="../frontend\\global",  # Path to static files
-    template_folder="../frontend\\global"  # Path to HTML files
+    static_folder="../frontend/static",        # Static files (CSS, JS, images)
+    template_folder="../frontend/templates"   # Template files (HTML)
 )
+
+app.secret_key = 'kaptagat_heights'
 
 # MySQL configuration
 app.config['MYSQL_HOST'] = 'localhost'
@@ -49,6 +51,46 @@ def register():
         return jsonify({"error": str(e)}), 400
     finally:
         cursor.close()
+        
+        
+# Route to serve the login page (GET request)
+@app.route('/login', methods=['GET'])
+def show_login_page():
+    return render_template('login.html')
+
+# Route to handle login logic (POST request)
+@app.route('/login', methods=['POST'])
+def login():
+    # Get form data
+    email = request.form['email']
+    password = request.form['password']
+
+    # Query the database for the user
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    user = cursor.fetchone()
+    cursor.close()
+
+    if user:
+        # Validate the password
+        if bcrypt.checkpw(password.encode('utf-8'), user[3].encode('utf-8')):  # Assuming the password is in column 4
+            role = user[4]  # Assuming the role is in column 5
+            session['user_role'] = role  # Save role in session
+            session['user_email'] = email  # Save email in session (if needed)
+            return jsonify({"message": "Login successful!", "role": role}), 200
+        else:
+            return jsonify({"error": "Invalid password"}), 401
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    if 'user_role' not in session:
+        return redirect('/login')  # Redirect to login if user is not authenticated
+    user_role = session['user_role']  # Get user role from session
+    return render_template('dashboard.html', role=user_role)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

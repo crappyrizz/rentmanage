@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="Register.css">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='Register.css') }}">
 </head>
    
@@ -21,20 +21,20 @@
             
             <h1>Register Here</h1> <br>
 
-            <form action="http://127.0.0.1:5000/egister" method="POST">
+            <form action="http://127.0.0.1:5000/register" method="POST">
 
                 <p>Fullname:</p>
                <!-- <div class="input-container"> -->
                     <!-- <i class="fa fa-user"></i> Person Icon -->
                     
-                <input type="text" name= "" placeholder="Enter Fullname" required>
+                <input type="text" name= "fullname" placeholder="Enter Fullname" required>
                 <!-- </div> -->
 
                 <p>Email:</p>
                 <!-- <div class="input-container"> -->
                     <!-- <i class="fa fa-envelope"></i> Mail Icon -->
                     
-                <input type="email" name= "" placeholder="Enter email" required>
+                <input type="email" name= "email" placeholder="Enter email" required>
                 <!-- </div> -->
 
                 <!-- Dropdown for selecting role -->
@@ -49,14 +49,14 @@
                 <!-- <div class="input-container"> -->
                     <!-- <i class="fa fa-door-open"></i> Door Icon -->
                     
-                <input type="text" name="" placeholder="Enter DoorNo" required>
+                <input type="text" name="doorno" placeholder="Enter DoorNo" required>
                 <!-- </div> -->
 
                 <p>Password:</p>
                 <!-- <div class="input-container"> -->
                     <!-- <i class="fa fa-lock"></i> Padlock Icon -->
                     
-                <input type="Password" name="" placeholder="Enter Password" required>
+                <input type="Password" name="password" placeholder="Enter Password" required>
                 <!-- </div> -->
 
                 <!-- Checkbox for terms and conditions -->
@@ -65,7 +65,7 @@
         <label for="terms" required="">I agree to the terms and conditions </label>
     </div>
 
-                <input type="submit" name="" value="Register"><br>
+                <input type="submit" name="submit" value="Register"><br>
                 
                 
 

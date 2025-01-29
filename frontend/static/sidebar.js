@@ -7,7 +7,7 @@ function renderSidebar(userRole) {
         <li><a href="#">Dashboard</a></li>
         <li><a href="#">Message</a></li>
         <li><a href="#">Track</a></li>
-        <li><a href="#">Profile</a></li>
+        <li><a href="#">Profile</a></li>    
     `;
 
     // Role-specific buttons
@@ -32,5 +32,5 @@ function renderSidebar(userRole) {
 }
 
 // Example usage
-const userRole = "admin"; // Replace with dynamic role from backend
+
 renderSidebar(userRole);
