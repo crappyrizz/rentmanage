@@ -1,0 +1,14 @@
+<ul id="sidebar-menu">
+    <!-- You can render items based on the role passed from Flask -->
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Chat Room</a></li>
+    <li><a href="#">Analytics</a></li>
+    <li><a href="#">Profile</a></li>
+    {% if role == "admin" %}
+        <li><a href="#">Manage Tenants</a></li>
+        <li><a href="#">Payments & Receipts</a></li>
+    {% elif role == "tenant" %}
+        <li><a href="#">Pay Rent</a></li>
+    {% endif %}
+    <li><a href="#">Logout</a></li>
+</ul>

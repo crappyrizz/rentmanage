@@ -1,40 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
-    
+{% block content %}
+<h1>Welcome to the Dashboard</h1>
+<!-- Add any additional dashboard-specific content here -->
+<p>This is the admin dashboard content. You can add charts, notifications, etc.</p>
+{% endblock %}
 
-</head>
-<body>
-    <h1>Welcome to the Dashboard</h1>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <ul id="sidebar-menu">
-                <!-- Sidebar items will be dynamically added here -->
-            </ul>
-        </div>
+{% extends "base.html" %}
 
-        <!-- Main Content -->
-        <div class="main-content">
-            
-            <!-- Add other main content here -->
-        </div>
-    </div>
+{% block title %}
+Admin Dashboard
+{% endblock %}
 
-    <!-- Pass the user role dynamically from Flask -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const userRole = "{{ role }}"; // Role passed from Flask backend
-            console.log("User Role:", userRole); // Debug
-            renderSidebar(userRole); // Call the function after DOM is ready
-        });
-    </script>
-    
-    <!-- Link to the sidebar.js file -->
-    <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
-</body>
-</html>
+
