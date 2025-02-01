@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <header>
+        <!-- Optional: Your header content -->
+    </header>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            {% include 'sidebar.html' %}
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <!-- Optionally, include your sidebar.js for dynamic adjustments -->
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+</body>
+</html>
