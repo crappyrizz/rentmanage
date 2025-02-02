@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block content %}
+<h1>Profile</h1>
+
+{% if message %}
+  <p>{{ message }}</p>
+{% endif %}
+
+<div class="profile">
+    <div class="profile-pic">
+        {% if profile_pic %}
+            <img src="{{ url_for('static', filename=profile_pic) }}?{{ random() }}" alt="Profile Picture" width="150">
+        {% else %}
+            <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" width="150">
+        {% endif %}
+    </div>
+    <div class="profile-info">
+        <p><strong>Name:</strong> {{ fullname }}</p>
+        <p><strong>Email:</strong> {{ email }}</p>
+        <p><strong>Door Number:</strong> {{ doorno }}</p>
+        <p><strong>Role:</strong> {{ role }}</p>
+    </div>
+</div>
+
+<!-- Button to show update form -->
+<button id="updateProfileBtn">Update Profile</button>
+
+<!-- Hidden Update Form -->
+<div id="updateProfileForm" style="display: none; margin-top: 20px;">
+    <h2>Update Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="fullname">Name:</label>
+        <input type="text" name="fullname" value="{{ fullname }}" required><br>
+        
+        <label for="doorno">Door Number:</label>
+        <input type="text" name="doorno" value="{{ doorno }}"><br>
+        
+        <label for="profile_pic">Profile Picture:</label>
+        <input type="file" name="profile_pic"><br>
+        
+        <button type="submit">Submit Updates</button>
+    </form>
+</div>
+
+<script>
+    // Toggle the visibility of the update form when the button is clicked
+    document.getElementById('updateProfileBtn').addEventListener('click', function() {
+        var formDiv = document.getElementById('updateProfileForm');
+        if (formDiv.style.display === 'none') {
+            formDiv.style.display = 'block';
+        } else {
+            formDiv.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

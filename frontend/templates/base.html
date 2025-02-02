@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Dashboard{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <title>{% block title %}Default Dashboard Title{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
 </head>
 <body>
     <header>
@@ -12,15 +12,18 @@
     </header>
 
     <div class="dashboard">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            {% include 'sidebar.html' %}
-        </div>
+        
 
         <!-- Main Content -->
         <div class="main-content">
             {% block content %}
             {% endblock %}
+        </div>
+
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            {% include 'sidebar.html' %}
         </div>
     </div>
 

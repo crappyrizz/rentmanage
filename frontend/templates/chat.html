@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <!-- You can later enhance this CSS or use a framework -->
+</head>
+<body>
+    <h1>Chat Room</h1>
+    
+    <!-- Conversation selector -->
+    <form method="GET" action="{{ url_for('chat') }}">
+        <label for="recipient_id">Send message to:</label>
+        <select name="recipient_id" id="recipient_id" onchange="this.form.submit()">
+            <option value="public" {% if current_recipient == 'public' %}selected{% endif %}>Everyone (Public Chat)</option>
+            {% for rec in potential_recipients %}
+                <option value="{{ rec[0] }}" {% if current_recipient != 'public' and current_recipient|int == rec[0] %}selected{% endif %}>
+                    {{ rec[1] }} ({{ rec[2] }})
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    
+    <!-- Display chat messages -->
+    <div id="chat-messages">
+        {% if messages %}
+            {% for msg in messages %}
+                <p>
+                    <strong>{{ msg[1] }}</strong>
+                    <em>({{ msg[2] }})</em>: 
+                    {{ msg[0] }}
+                </p>
+            {% endfor %}
+        {% else %}
+            <p>No messages in this conversation yet.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Form to send a new message -->
+    <form method="POST" action="{{ url_for('chat', recipient_id=current_recipient) }}">
+        <!-- Include the conversation indicator in a hidden field -->
+        <input type="hidden" name="recipient_id" value="{{ current_recipient }}">
+        <textarea name="content" placeholder="Type your message here" required></textarea>
+        <br>
+        <button type="submit">Send Message</button>
+    </form>
+    
+    <br>
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>
