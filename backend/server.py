@@ -3,6 +3,22 @@ import os
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 import bcrypt
+import base64
+import requests
+from datetime import datetime
+
+
+def generate_password(short_code, passkey, timestamp):
+    # Concatenate short_code, passkey, and timestamp, then Base64 encode the result.
+    data_to_encode = f"{short_code}{passkey}{timestamp}"
+    encoded_string = base64.b64encode(data_to_encode.encode()).decode()
+    return encoded_string
+
+# Global MPESA Credentials
+business_short_code = '174379'
+passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+
+
 
 app = Flask(
     __name__,
@@ -273,28 +289,136 @@ def pay_rent():
     tenant_id, fullname = tenant
 
     # For simplicity, assume each tenant pays a fixed rent (e.g., 1000).
-    rent_amount = 1000  
+    rent_amount = 1  
     message = ''
     
     if request.method == 'POST':
         payment_method = request.form.get('payment_method')
         # In a real scenario, you might add additional validation or integrate with a payment gateway.
-        try:
-            cursor.execute(
-                "INSERT INTO payments (tenant_id, amount, payment_method, status) VALUES (%s, %s, %s, %s)",
-                (tenant_id, rent_amount, payment_method, 'completed')
-            )
-            mysql.connection.commit()
-            message = 'Payment successful!'
-        except Exception as e:
-            mysql.connection.rollback()
-            message = 'Payment failed: ' + str(e)
-        finally:
-            cursor.close()
+        
+        
+        if payment_method == 'mpesa':
+            # You need to supply the proper phone number and account reference.
+            # Assume you have tenant phone number stored (or you can add a field for it)
+            tenant_phone = "254796412978"  # Replace with the actual tenant phone number in international format
+            account_reference = "Tenant" + str(tenant_id)  # For example, use the tenant ID as reference
+            transaction_desc = "Rent Payment"
+            
+            # Call the MPESA integration function.
+            stk_response = initiate_stk_push(tenant_phone, rent_amount, account_reference, transaction_desc)
+            message = f"MPESA STK Push initiated: {stk_response.get('ResponseDescription', 'No response description')}"
+            # Optionally, you may want to insert a payment record with a status of 'pending'.
+        else:
+            try:
+                cursor.execute(
+                    "INSERT INTO payments (tenant_id, amount, payment_method, status) VALUES (%s, %s, %s, %s)",
+                    (tenant_id, rent_amount, payment_method, 'completed')
+                )
+                mysql.connection.commit()
+                message = 'Payment successful!'
+            except Exception as e:
+                mysql.connection.rollback()
+                message = 'Payment failed: ' + str(e)
+        cursor.close()
         return render_template('payment_confirmation.html', message=message, rent_amount=rent_amount)
     
     cursor.close()
     return render_template('pay_rent.html', rent_amount=rent_amount, fullname=fullname)
+
+
+
+def get_mpesa_access_token():
+    consumer_key = 'Yuw5sIah4WWMKHFywAXWo2NmcZePtmRhRR6RiDfcP4GIDrfW'
+    consumer_secret = 'XgiaDwFHzxGFMZQrpI3wbwCUYGMbPk0sZ6ECf5HZVeP87ckyeLUIZLxguD61gyrE'
+    # Daraja OAuth endpoint for sandbox
+    api_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+    
+    # Prepare the credentials string and encode it in base64
+    credentials = f"{consumer_key}:{consumer_secret}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+    
+    headers = {
+        'Authorization': f'Basic {encoded_credentials}'
+    }
+    
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()  # Raise an error if the request failed
+    access_token = response.json().get('access_token')
+    return access_token
+
+# Example usage:
+
+
+
+
+
+
+def generate_timestamp():
+    # Generate current timestamp in the required format
+    return datetime.now().strftime('%Y%m%d%H%M%S')
+
+
+
+
+# Example usage:
+
+
+def initiate_stk_push(phone_number, amount, account_reference, transaction_desc):
+    access_token = get_mpesa_access_token()
+    api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+    
+    # Generate required parameters
+    timestamp = generate_timestamp()
+    password = generate_password(business_short_code, passkey, timestamp)
+    
+    # Set the callback URL to your public ngrok URL plus your callback route.
+    callback_url = " https://7fc1-41-90-44-148.ngrok-free.app/mpesa/callback"
+    
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "BusinessShortCode": business_short_code,
+        "Password": password,
+        "Timestamp": timestamp,
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": amount,
+        "PartyA": phone_number,         # Must be a string in international format, e.g., "254796412978"
+        "PartyB": business_short_code,  # Your Business Short Code
+        "PhoneNumber": phone_number,
+        "CallBackURL": callback_url,
+        "AccountReference": account_reference,
+        "TransactionDesc": transaction_desc
+    }
+    
+    print("Timestamp:", timestamp)
+    print("Password:", password)
+
+    response = requests.post(api_url, json=payload, headers=headers)
+    response.raise_for_status()  # Raise an error if the request failed
+    return response.json()
+
+
+
+
+
+
+@app.route('/mpesa/callback', methods=['POST'])
+def mpesa_callback():
+    callback_data = request.get_json()
+    # Log or process the callback data as needed.
+    # For example, check if the payment was successful and update your database.
+    print("Callback received:", callback_data)
+    
+    # You might want to extract fields such as:
+    # callback_data['Body']['stkCallback']['ResultCode']
+    # callback_data['Body']['stkCallback']['ResultDesc']
+    # callback_data['Body']['stkCallback']['CallbackMetadata']
+    
+    # Respond with a success status to Daraja
+    return "Callback received", 200
 
 
 if __name__ == '__main__':
