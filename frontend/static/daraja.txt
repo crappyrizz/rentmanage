@@ -1,0 +1,9 @@
+ // api keys
+ consumerKey = Yuw5sIah4WWMKHFywAXWo2NmcZePtmRhRR6RiDfcP4GIDrfW
+ consumerSecret = XgiaDwFHzxGFMZQrpI3wbwCUYGMbPk0sZ6ECf5HZVeP87ckyeLUIZLxguD61gyrE
+
+ //access_token_url = https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials
+ access_token_url =
+  
+ 
+  
