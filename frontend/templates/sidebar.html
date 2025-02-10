@@ -8,7 +8,7 @@
         <li><a href="#">Manage Tenants</a></li>
         <li><a href="#">Payments & Receipts</a></li>
     {% elif role == "tenant" %}
-        <li><a href="#">Pay Rent</a></li>
+        <li><a href="{{url_for('pay_rent')}}">Pay Rent</a></li>
     {% endif %}
     <li><a href="{{url_for('login')}}">Logout</a></li>
 </ul>

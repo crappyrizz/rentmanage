@@ -257,5 +257,45 @@ def profile():
 
 
 
+@app.route('/pay', methods=['GET', 'POST'])
+def pay_rent():
+    # Ensure the user is logged in and is a tenant.
+    if 'user_email' not in session or session.get('user_role') != 'tenant':
+        return redirect(url_for('show_login_page'))
+    
+    cursor = mysql.connection.cursor()
+    # Retrieve tenant details based on session email.
+    cursor.execute("SELECT id, fullname FROM users WHERE email = %s", (session['user_email'],))
+    tenant = cursor.fetchone()
+    if not tenant:
+        cursor.close()
+        return redirect(url_for('dashboard'))
+    tenant_id, fullname = tenant
+
+    # For simplicity, assume each tenant pays a fixed rent (e.g., 1000).
+    rent_amount = 1000  
+    message = ''
+    
+    if request.method == 'POST':
+        payment_method = request.form.get('payment_method')
+        # In a real scenario, you might add additional validation or integrate with a payment gateway.
+        try:
+            cursor.execute(
+                "INSERT INTO payments (tenant_id, amount, payment_method, status) VALUES (%s, %s, %s, %s)",
+                (tenant_id, rent_amount, payment_method, 'completed')
+            )
+            mysql.connection.commit()
+            message = 'Payment successful!'
+        except Exception as e:
+            mysql.connection.rollback()
+            message = 'Payment failed: ' + str(e)
+        finally:
+            cursor.close()
+        return render_template('payment_confirmation.html', message=message, rent_amount=rent_amount)
+    
+    cursor.close()
+    return render_template('pay_rent.html', rent_amount=rent_amount, fullname=fullname)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

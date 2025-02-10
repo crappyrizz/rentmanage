@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Pay Rent
+{% endblock %}
+
+{% block content %}
+<h1>Pay Rent</h1>
+<p>Hello, {{ fullname }}. Your rent amount due is ${{ rent_amount }}.</p>
+
+<form method="POST">
+    <label for="payment_method">Select Payment Method:</label>
+    <select name="payment_method" id="payment_method" required>
+        <option value="">--Select Method--</option>
+        <option value="bank">Bank Transfer</option>
+        <option value="mpesa">M-Pesa</option>
+        <option value="card">Credit/Debit Card</option>
+    </select>
+    <br><br>
+    <button type="submit">Pay Now</button>
+</form>
+{% endblock %}
