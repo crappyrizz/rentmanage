@@ -2,11 +2,11 @@
     <!-- You can render items based on the role passed from Flask -->
     <li><a href="#">Home</a></li>
     <li><a href="{{url_for('chat')}}">Chat Room</a></li>
-    <li><a href="#">Analytics</a></li>
+    <li><a href="{{ url_for('analytics') }}">Analytics</a></li>
     <li><a href="{{url_for('profile')}}">Profile</a></li>
     {% if role == "admin" %}
         <li><a href="#">Manage Tenants</a></li>
-        <li><a href="#">Payments & Receipts</a></li>
+        <li><a href="{{url_for('generate_receipt')}}">Payments & Receipts</a></li>
     {% elif role == "tenant" %}
         <li><a href="{{url_for('pay_rent')}}">Pay Rent</a></li>
     {% endif %}

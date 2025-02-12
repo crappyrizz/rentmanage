@@ -1,0 +1,52 @@
+<!-- receipt.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt for Payment #{{ payment.payment_id }}</title>
+    <style>
+      body { font-family: Arial, sans-serif; }
+      .container { width: 80%; margin: auto; }
+      .header { text-align: center; }
+      .details { margin-top: 20px; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+      <div class="header">
+         <h1>Receipt</h1>
+         <p>Payment Receipt for Rent</p>
+      </div>
+      <div class="details">
+         <table>
+            <tr>
+               <th>Receipt Number</th>
+               <td>{{ payment.payment_id }}</td>
+            </tr>
+            <tr>
+               <th>Tenant Name</th>
+               <td>{{ payment.tenant_name }}</td>
+            </tr>
+            <tr>
+               <th>Amount Paid</th>
+               <td>{{ payment.amount }}</td>
+            </tr>
+            <tr>
+               <th>Payment Method</th>
+               <td>{{ payment.payment_method }}</td>
+            </tr>
+            <tr>
+               <th>Date</th>
+               <td>{{ payment.created_at }}</td>
+            </tr>
+            <tr>
+               <th>Account Reference</th>
+               <td>{{ payment.account_reference }}</td>
+            </tr>
+         </table>
+      </div>
+    </div>
+</body>
+</html>

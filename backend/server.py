@@ -6,6 +6,8 @@ import bcrypt
 import base64
 import requests
 from datetime import datetime
+from weasyprint import HTML
+
 
 
 def generate_password(short_code, passkey, timestamp):
@@ -419,6 +421,108 @@ def mpesa_callback():
     
     # Respond with a success status to Daraja
     return "Callback received", 200
+
+
+
+
+
+
+@app.route('/analytics', methods=['GET'])
+def analytics():
+    # Ensure only admins can access analytics
+    if 'user_role' not in session or session.get('user_role') != 'admin':
+        return redirect(url_for('dashboard'))
+    
+    cursor = mysql.connection.cursor()
+    
+    # Example Query 1: Count the number of tenants
+    cursor.execute("SELECT COUNT(*) FROM users WHERE role = 'tenant'")
+    tenant_count = cursor.fetchone()[0]
+    # Assume each tenant is expected to pay 1000 Ksh.
+    expected_revenue = tenant_count * 1000
+
+    # Example Query 2: Sum the total of completed payments from the payments table.
+    cursor.execute("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'")
+    actual_revenue = cursor.fetchone()[0]
+    
+    # Example Query 3 (Optional): Count on-time vs. late payments.
+    # (This assumes you have an 'on_time' field in your payments table.)
+    cursor.execute("SELECT COUNT(*) FROM payments WHERE status = 'completed' AND on_time = 1")
+    on_time_count = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM payments WHERE status = 'completed' AND on_time = 0")
+    late_count = cursor.fetchone()[0]
+    
+    cursor.close()
+    
+    # Package the data into a dictionary to pass to the template.
+    analytics_data = {
+        'expected_revenue': expected_revenue,
+        'actual_revenue': actual_revenue,
+        'on_time_count': on_time_count,
+        'late_count': late_count
+    }
+    
+    return render_template('analytics.html', data=analytics_data)
+
+
+
+@app.route('/admin/generate_receipt/<int:payment_id>', methods=['GET'])
+def generate_receipt(payment_id):
+    # Ensure the user is logged in and is an admin.
+    if 'user_email' not in session or session.get('user_role') != 'admin':
+        return redirect(url_for('show_login_page'))
+    
+    cursor = mysql.connection.cursor()
+    # Retrieve payment details; join with users to get tenant name, etc.
+    query = """
+        SELECT p.payment_id, p.amount, p.payment_method, p.created_at, p.account_reference,
+        u.fullname as tenant_name
+        FROM payments p
+        JOIN users u ON p.tenant_id = u.id
+        WHERE p.payment_id = %s
+    """
+    cursor.execute(query, (payment_id,))
+    payment = cursor.fetchone()
+    cursor.close()
+    
+    if not payment:
+        return "Payment not found", 404
+
+    # Build a dictionary to pass to the template.
+    payment_data = {
+        "payment_id": payment[0],
+        "amount": payment[1],
+        "payment_method": payment[2],
+        "created_at": payment[3],
+        "account_reference": payment[4],
+        "tenant_name": payment[5]
+    }
+    
+    # Render the receipt HTML using the receipt template.
+    rendered_html = render_template('receipt.html', payment=payment_data)
+    
+    # Generate PDF from the rendered HTML.
+    pdf = HTML(string=rendered_html).write_pdf()
+    
+    # Save the PDF file to a receipts folder (make sure it exists)
+    receipts_folder = os.path.join(os.getcwd(), 'frontend', 'static', 'receipts')
+    if not os.path.exists(receipts_folder):
+        os.makedirs(receipts_folder)
+    
+    receipt_filename = f"receipt_{payment_id}.pdf"
+    receipt_path = os.path.join(receipts_folder, receipt_filename)
+    with open(receipt_path, 'wb') as f:
+        f.write(pdf)
+    
+    # Update the payment record with the receipt URL (relative to static folder)
+    receipt_url = f"receipts/{receipt_filename}"
+    cursor = mysql.connection.cursor()
+    cursor.execute("UPDATE payments SET receipt_url = %s WHERE payment_id = %s", (receipt_url, payment_id))
+    mysql.connection.commit()
+    cursor.close()
+    
+    return f"Receipt generated successfully. <a href='{url_for('static', filename=receipt_url)}'>Download Receipt</a>"
+
 
 
 if __name__ == '__main__':
