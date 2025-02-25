@@ -6,7 +6,7 @@
     <li><a href="{{url_for('profile')}}">Profile</a></li>
     {% if role == "admin" %}
         <li><a href="#">Manage Tenants</a></li>
-        <li><a href="{{url_for('generate_receipt')}}">Payments & Receipts</a></li>
+        <li><a href="{{url_for('Receipts')}}">Payments and Receipts</a></li>
     {% elif role == "tenant" %}
         <li><a href="{{url_for('pay_rent')}}">Pay Rent</a></li>
     {% endif %}

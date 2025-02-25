@@ -10,6 +10,7 @@ from weasyprint import HTML
 
 
 
+
 def generate_password(short_code, passkey, timestamp):
     # Concatenate short_code, passkey, and timestamp, then Base64 encode the result.
     data_to_encode = f"{short_code}{passkey}{timestamp}"
@@ -32,8 +33,8 @@ app.secret_key = 'kaptagat_heights'
 
 # MySQL configuration
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'  # Replace with your MySQL username
-app.config['MYSQL_PASSWORD'] = 'DOMinica@2194'  # Replace with your MySQL password
+app.config['MYSQL_USER'] = 'root'  
+app.config['MYSQL_PASSWORD'] = 'DOMinica@2194'  
 app.config['MYSQL_DB'] = 'rent_manage'
 mysql = MySQL(app)
 
@@ -290,7 +291,7 @@ def pay_rent():
         return redirect(url_for('dashboard'))
     tenant_id, fullname = tenant
 
-    # For simplicity, assume each tenant pays a fixed rent (e.g., 1000).
+    # using fixed amount  for now
     rent_amount = 1  
     message = ''
     
@@ -468,12 +469,13 @@ def analytics():
 
 @app.route('/admin/generate_receipt/<int:payment_id>', methods=['GET'])
 def generate_receipt(payment_id):
-    # Ensure the user is logged in and is an admin.
+    # Ensure only admin users can access this route.
     if 'user_email' not in session or session.get('user_role') != 'admin':
         return redirect(url_for('show_login_page'))
     
     cursor = mysql.connection.cursor()
-    # Retrieve payment details; join with users to get tenant name, etc.
+    
+    # Retrieve payment details (join with users to get tenant's name, etc.)
     query = """
         SELECT p.payment_id, p.amount, p.payment_method, p.created_at, p.account_reference,
         u.fullname as tenant_name
@@ -488,7 +490,7 @@ def generate_receipt(payment_id):
     if not payment:
         return "Payment not found", 404
 
-    # Build a dictionary to pass to the template.
+    # Build a dictionary for template data.
     payment_data = {
         "payment_id": payment[0],
         "amount": payment[1],
@@ -498,13 +500,13 @@ def generate_receipt(payment_id):
         "tenant_name": payment[5]
     }
     
-    # Render the receipt HTML using the receipt template.
+    # Render the HTML using your receipt template.
     rendered_html = render_template('receipt.html', payment=payment_data)
     
-    # Generate PDF from the rendered HTML.
+    # Generate the PDF from the rendered HTML.
     pdf = HTML(string=rendered_html).write_pdf()
     
-    # Save the PDF file to a receipts folder (make sure it exists)
+    # Save the PDF in a designated receipts folder.
     receipts_folder = os.path.join(os.getcwd(), 'frontend', 'static', 'receipts')
     if not os.path.exists(receipts_folder):
         os.makedirs(receipts_folder)
@@ -514,14 +516,15 @@ def generate_receipt(payment_id):
     with open(receipt_path, 'wb') as f:
         f.write(pdf)
     
-    # Update the payment record with the receipt URL (relative to static folder)
+    # Update the payment record with the receipt URL (relative to the static folder).
     receipt_url = f"receipts/{receipt_filename}"
     cursor = mysql.connection.cursor()
     cursor.execute("UPDATE payments SET receipt_url = %s WHERE payment_id = %s", (receipt_url, payment_id))
     mysql.connection.commit()
     cursor.close()
     
-    return f"Receipt generated successfully. <a href='{url_for('static', filename=receipt_url)}'>Download Receipt</a>"
+    return f"Receipt generated successfully. <a href='{url_for('static', filename=receipt_url)}' download>Download Receipt</a>"
+
 
 
 
